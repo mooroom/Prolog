@@ -128,19 +128,19 @@
 %     member([Fishowner,_,fish,_,_], Houses).
 
 
-size(game, 9, 9).
-bomb(game, 4, 1).
-bomb(game, 3, 1).
-bomb(game, 2, 1).
-bomb(game, 5, 1).
-bomb(game, 7, 2).
-bomb(game, 3, 6).
-bomb(game, 8, 6).
-bomb(game, 1, 7).
-bomb(game, 3, 7).
-bomb(game, 6, 7).
-bomb(game, 3, 9).
-bomb(game, 8, 8).
+% size(game, 9, 9).
+% bomb(game, 4, 1).
+% bomb(game, 3, 1).
+% bomb(game, 2, 1).
+% bomb(game, 5, 1).
+% bomb(game, 7, 2).
+% bomb(game, 3, 6).
+% bomb(game, 8, 6).
+% bomb(game, 1, 7).
+% bomb(game, 3, 7).
+% bomb(game, 6, 7).
+% bomb(game, 3, 9).
+% bomb(game, 8, 8).
 
 
 % size(game, 3, 3).
@@ -252,3 +252,22 @@ show_status(Game, L):-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%-5
+win_col(Game, N, N, Y, L, Result):-
+    not(bomb(Game, N, Y)), append([[N,Y]], L, Result);
+    bomb(Game, N, Y), Result = L.
+
+win_col(Game, N, X, Y, L, Result):-
+    X < N, not(bomb(Game, X, Y)), append([[X,Y]], L, Lnext), Xnext is X + 1, win_col(Game, N, Xnext, Y, Lnext, Result);
+    X < N, bomb(Game, X, Y), Xnext is X + 1, win_col(Game, N, Xnext, Y, L, Result).
+
+win_rows(Game, N, M, M, L, Result):- win_col(Game, N, 1, M, [], R), append(R, L, Result).
+
+win_rows(Game, N, M, Y, L, Result):- 
+Y < M, win_col(Game, N, 1, Y, [], R), Ynext is Y + 1, append(R, L, Lnext), win_rows(Game, N, M, Ynext, Lnext, Result).
+
+win_list(Game, WinList):-
+    size(Game, N, M),
+    win_rows(Game, N, M, 1, [], WinList).
+
+% win_list(Game, L, M, M).
+% win_list(Game, L, M, C):-
