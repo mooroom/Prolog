@@ -141,18 +141,19 @@
 % bomb(game, 6, 7).
 % bomb(game, 3, 9).
 % bomb(game, 8, 8).
+% bomb(game, 9, 9).
 
 
-% size(game, 3, 3).
-% bomb(game, 1, 1).
-% bomb(game, 1, 2).
-% bomb(game, 1, 3).
+size(game, 3, 3).
+bomb(game, 1, 1).
+bomb(game, 1, 2).
+bomb(game, 1, 3).
 % bomb(game, 2, 1).
 % bomb(game, 2, 2).
-% bomb(game, 2, 3).
+bomb(game, 2, 3).
 % bomb(game, 3, 1).
-% bomb(game, 3, 2).
-% bomb(game, 3, 3).
+bomb(game, 3, 2).
+bomb(game, 3, 3).
 
 col(Game, N):- size(Game, N, _).
 row(Game, M):- size(Game, _, M).
@@ -269,5 +270,14 @@ win_list(Game, WinList):-
     size(Game, N, M),
     win_rows(Game, N, M, 1, [], WinList).
 
-% win_list(Game, L, M, M).
-% win_list(Game, L, M, C):-
+win_check(Game, L, Rest):-
+    win_list(Game, WinList),
+    first(E, L),
+    member(E, WinList),
+
+is_win(Game, L):-
+    win_list(Game, WinList),
+    first(E, L),
+    member(E, WinList),
+    rest(Lnext, L),
+    is_win(Game, Lnext).
