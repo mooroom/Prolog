@@ -142,6 +142,7 @@ bomb(game, 6, 7).
 bomb(game, 3, 9).
 bomb(game, 8, 8).
 
+
 % size(game, 3, 3).
 % bomb(game, 1, 1).
 % bomb(game, 1, 2).
@@ -159,9 +160,10 @@ row(Game, M):- size(Game, _, M).
 % bombs_in_col(Game, -1, X, L, Result):- Result = L.
 % bombs_in_col(Game, N, X, L, Result):- bomb(Game, X, 1), append(L, [[X,1]], TempL), Nnext is N-1, Xnext is X+1, bombs_in_col(Game, Nnext, Xnext, TempL, Result);Nnext is N-1, Xnext is X+1, bombs_in_col(Game, Nnext, Xnext, TempL, Result).
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%-1
 first(X, [X|_]).
 rest(X, [_|X]).
-
 
 neighbor(X,Y,Arr):- 
     X1 is X-1, Y1 is Y-1,
@@ -197,6 +199,8 @@ open_at(Game, X, Y, S):-
     neighbor(X, Y, L),
     check(0, L, S).
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%-2
 to_format(Game, X, Y):-
     open_at(Game, X, Y, S), S = bomb, format("* ");
     open_at(Game, X, Y, S), S = empty, format("_ ");
@@ -217,3 +221,34 @@ print_rows(Game, M, Y, N):-
 show_answer(Game):-
     size(Game, N, M),
     print_rows(Game, M, 1, N).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%-3
+is_survive(Game, []):- size(Game,_,_).
+is_survive(Game, [[X,Y]|Rest]):- not(bomb(Game, X, Y)), is_survive(Game, Rest).
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%-4
+opened_to_format(Game, L, X, Y):-
+    not(member([X,Y], L)), format("? ");
+    open_at(Game, X, Y, S), S = bomb, format("* ");
+    open_at(Game, X, Y, S), S = empty, format("_ ");
+    open_at(Game, X, Y, S), not(S = bomb), not(S = empty), format("~d ", S).
+
+opened_print_col(Game, L, N, N, M):- opened_to_format(Game, L, N, M), nl.
+
+opened_print_col(Game, L, N, X, M):-
+    X < N, opened_to_format(Game, L, X, M), Xnext is X + 1, opened_print_col(Game, L, N, Xnext, M).
+
+opened_print_rows(Game, L, M, M, N):- opened_print_col(Game, L, N, 1, M).
+
+opened_print_rows(Game, L, M, Y, N):-
+    Y < M, opened_print_col(Game, L, N, 1, Y), Ynext is Y + 1, opened_print_rows(Game, L, M, Ynext, N).
+
+show_status(Game, L):-
+    size(Game, N, M),
+    opened_print_rows(Game, L, M, 1, N).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%-5
