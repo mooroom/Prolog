@@ -270,14 +270,26 @@ win_list(Game, WinList):-
     size(Game, N, M),
     win_rows(Game, N, M, 1, [], WinList).
 
-win_check(Game, L, Rest):-
-    win_list(Game, WinList),
-    first(E, L),
-    member(E, WinList),
+length_list([], Count, Result):-
+    Result = Count.
 
-is_win(Game, L):-
+length_list(L, Count, Result):-
+    rest(Lnext, L),
+    CountNext is Count + 1,
+    length_list(Lnext, CountNext, Result).
+
+win_check(Game, [], L_origin):-
+    win_list(Game, WinList),
+    length_list(WinList, 0, R1),
+    length_list(L_origin, 0, R2),
+    R1 = R2.
+
+win_check(Game, L, L_origin):-
     win_list(Game, WinList),
     first(E, L),
     member(E, WinList),
     rest(Lnext, L),
-    is_win(Game, Lnext).
+    win_check(Game, Lnext, L_origin).
+
+is_win(Game, L):-
+    win_check(Game, L, L).
